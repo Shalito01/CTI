@@ -11,6 +11,8 @@ public class Node {
 	private String IdPadre;
 	private int NumFigli;
 
+	public Node() {}
+
 	//Ora scrivo getter e setter
 	public String getID()
 	{
@@ -42,8 +44,17 @@ public class Node {
 		this.IdPadre = NewName;
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer buffer = new StringBuffer("");
+		buffer.append(id);
+		buffer.append(" ");
+		buffer.append(NomeCatalogo);
+		return buffer.toString();
+	}
 
 
+	/*
 	public List<Node> ExtractSubTree(Node n, List<Node> AllNodes) {
 	    List<Node> result = new ArrayList<Node>();
 	    for (Node node : AllNodes) {
@@ -57,19 +68,19 @@ public class Node {
 
 
 	//ora mi serve un metodo che copia a partire da un determinato nodo destinazione un intero sottoAlbero.
-	public void CopiaSottoAlbero(List<Node> Subtree, Node Destinazione) throws RuntimeException
+	public static void CopiaSottoAlbero(List<Node> Subtree, String Destinazione) throws RuntimeException
 	{
 		if(Destinazione.NumFigli >= 9)
 		{
 			throw new RuntimeException("Non c'è posto nel nodo destinazione");
 		}
-		Subtree.get(0).IdPadre = Destinazione.getID();
+		Subtree.get(0).IdPadre = Destinazione;
 		CambiaIdSottoAlbero(Subtree, Destinazione);
 	}
 
-	public void CambiaIdSottoAlbero(List<Node> ListaDiNodi, Node Destinazione)
+	public static void CambiaIdSottoAlbero(List<Node> ListaDiNodi, String Destinazione)
 	{
-		ListaDiNodi.get(0).setID(Integer.toString((Integer.parseInt(Destinazione.getID())*10 + Destinazione.NumFigli)));
+		ListaDiNodi.get(0).setID(Integer.toString((Integer.parseInt(Destinazione)*10 + Destinazione)));
 
 		ListaDiNodi.get(0).setIdPadre(Destinazione.getID());
 		for(int i = 1; i < ListaDiNodi.size(); i++)
@@ -95,4 +106,5 @@ public class Node {
 		}
 
 	}
+	*/
 }
