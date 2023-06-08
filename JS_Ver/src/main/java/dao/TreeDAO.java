@@ -35,6 +35,22 @@ public class TreeDAO {
 		return sottoAlbero;
 	}
 
+
+	public List<NodeBean> getChildList(NodeBean root) throws SQLException {
+		List<NodeBean> sottoAlbero = new ArrayList<>();
+		String query = "SELECT c.id, c.catalog_name, cf.parent_id FROM catalogo as c JOIN catalogo_figli as cf ON c.id = cf.node_id WHERE cf.parent_id = ? ORDER BY cf.node_id";
+		PreparedStatement pstmt = conn.prepareStatement(query);
+		pstmt.setString(1, root.getId());
+		ResultSet result = pstmt.executeQuery();
+
+		while (result.next()) {
+			NodeBean n = new NodeBean(result.getString(1), result.getString(2), result.getString(3));
+			System.err.println(n.toString());
+			sottoAlbero.add(n);
+		}
+		return sottoAlbero;
+	}
+
 	public List<NodeBean> getAlberoCompleto() throws SQLException {
 		List<NodeBean> AlberoCompleto = new ArrayList<NodeBean>();
 		PreparedStatement pstatement = conn.prepareStatement("SELECT c.id, c.catalog_name, cf.parent_id FROM catalogo as c JOIN catalogo_figli as cf ON c.id = cf.node_id ORDER BY cf.node_id");

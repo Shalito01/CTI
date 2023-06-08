@@ -14,18 +14,10 @@ public class Logout extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 		HttpSession session = req.getSession(false);
 
-        if(session != null)
-            session.invalidate();
+      if(session != null) {
+        session.invalidate();
+      }
 
-		res.sendRedirect("/login");
-    }
-
-    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-		HttpSession session = req.getSession(false);
-
-        if(session != null)
-            session.invalidate();
-
-		res.sendRedirect("/login");
+        res.sendRedirect("/login.html");
     }
 }

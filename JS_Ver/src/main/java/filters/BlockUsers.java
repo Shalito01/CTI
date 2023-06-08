@@ -13,7 +13,7 @@
  import javax.servlet.http.HttpSession;
 
 
- @WebFilter({"/home", "/logout", "/copy"})
+ @WebFilter({"/catalog", "/copy"})
  public class BlockUsers extends HttpFilter implements Filter {
  	private static final long serialVersionUID = 1L;
 
@@ -23,18 +23,17 @@
 
  		HttpServletRequest HTTPRequest = (HttpServletRequest) request;
  		HttpServletResponse HTTPResponse = (HttpServletResponse) response;
- 		HttpSession session = HTTPRequest.getSession(false);
+ 		HttpSession session = HTTPRequest.getSession();
 
-		if (session == null || session.getAttribute("user") == null) {
+		if (session.isNew() || session.getAttribute("user") == null) {
 			System.err.println("Entering login");
 			HTTPResponse.setContentType("text/html;charset=UTF-8");
 			HTTPResponse.setHeader("pragma", "no-cache");
 			HTTPResponse.setHeader("Cache-Control", "no-cache");
-			HTTPResponse.sendRedirect("/");
+			HTTPResponse.sendRedirect("/login.html");
 			return;
 		}
 
-		System.err.println("bypass login");
  		chain.doFilter(request, response);
  	}
  }

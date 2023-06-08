@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <script src="js/util.js" charset="utf-8" defer></script>
+        <script src="js/login.js" charset="utf-8" defer></script>
+    </head>
+    <body>
+        <form id="login-form" >
+            <div class="form-cell">
+                <label>Username:</label>
+                <input type="text" name="user" required>
+            </div>
+            <div class="form-cell">
+                <label>Password: </label>
+                <input type="password" name="pass" required>
+            </div>
+            <button id="login-btn" type="submit">Login</button>
+            <div id="error" class="content error">
+            </div>
+        </form>
+    </body>
+</html>

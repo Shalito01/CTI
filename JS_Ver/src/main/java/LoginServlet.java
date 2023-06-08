@@ -1,16 +1,21 @@
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import com.google.gson.Gson;
+
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import dao.UsersDAO;
+import utils.JsonVars;
+import utils.Util;
 
 @WebServlet("/login")
-public class LoginView extends HttpServlet {
+@MultipartConfig
+public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection connection;
@@ -34,47 +39,31 @@ public class LoginView extends HttpServlet {
 		}
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        RequestDispatcher rd = req.getRequestDispatcher("/login.jsp");
-        res.setContentType("text/html;charset=UTF-8");
-        rd.forward(req, res);
-    }
-
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         String user = req.getParameter("user");
         String pass = req.getParameter("pass");
         UsersDAO userDAO = new UsersDAO(connection);
 
         // Sanitize User input
-        if(!user.matches(whitelist)) { // || !pass.matches(whitelist)) {
-            RequestDispatcher rd = req.getRequestDispatcher("/login.jsp");
-            String error = "Bad input!!! Check your creds.";
-            req.setAttribute("error", error);
-            rd.include(req, res);
+        if(user == null || !user.matches(whitelist)) { // || !pass.matches(whitelist)) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            res.getWriter().println("Wrong fromat for username or password");
             return;
         }
 
 
-        if(userDAO.checkCredentials(user, pass)) {
-            HttpSession session = req.getSession();
-
-            session.setAttribute("user", user);
-            session.setMaxInactiveInterval(30*60);
-//            Cookie username = new Cookie("user", user);
-//            username.setMaxAge(30*60);
-//            res.addCookie(username);
-//            res.setContentType("text/html");
-        } else {
-            RequestDispatcher rd = req.getRequestDispatcher("/login.jsp");
-            String error = "Username or Password is wrong!";
-            req.setAttribute("error", error);
-            rd.include(req, res);
+        if(!userDAO.checkCredentials(user, pass)) {
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.getWriter().println("Wrong username and/or password");
             return;
         }
+    
+        HttpSession session = req.getSession();
 
-        res.setContentType("text/html;charset=UTF-8");
-        System.err.println("Redirecting to home");
-        res.sendRedirect("/home");
+        session.setAttribute("user", user);
+        session.setMaxInactiveInterval(30*60);
+        Util.send(res, new JsonVars("username", user));
     }
 
 }

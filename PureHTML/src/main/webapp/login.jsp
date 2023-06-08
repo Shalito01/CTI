@@ -18,7 +18,7 @@
             <button class="login-btn" type="submit">Login</button>
 
             <% if(request.getAttribute("error") != null) { %>
-                <div class="error">
+                <div id="error">
                     ${error}
                 </div>
             <% } %>

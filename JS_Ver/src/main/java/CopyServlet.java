@@ -33,48 +33,7 @@ public class CopyServlet extends HttpServlet {
 		}
     }
 
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-       // HttpSession session = req.getSession(false);
-
-       // if(session == null) {
-       //     res.sendRedirect("/login.html");
-       //     return;
-       // }
-
-        String id = req.getParameter("old_id");
-
-        TreeDAO service = new TreeDAO(connection);
-        try {
-            tree = service.getAlberoCompleto();
-            for (NodeBean nodeBean : tree) {
-                System.err.println(nodeBean.getId() + " ||| " + nodeBean.getIdPadre());
-
-                if((nodeBean.getId().equals(id)
-                            || nodeBean.getIdPadre().equals(id))
-                            || (nodeBean.getIdPadre().length() > id.length() && nodeBean.getIdPadre().substring(0, id.length()).equals(id)))
-                {
-                    nodeBean.select(true);
-                }
-            }
-
-            req.setAttribute("old_id", id);
-            req.setAttribute("catalog_tree", tree);
-            res.setContentType("text/html;charset=UTF-8");
-            req.getRequestDispatcher("/copy.jsp").forward(req, res);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Error Handling
-        }
-    }
-
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-       // HttpSession session = req.getSession(false);
-       // if(session == null) {
-       //     RequestDispatcher rd = req.getRequestDispatcher("/login.html");
-       //     rd.include(req, res);
-       //     return;
-       // }
 
         String old_id = req.getParameter("old_id");
         String new_id = req.getParameter("new_id");
@@ -101,5 +60,15 @@ public class CopyServlet extends HttpServlet {
         }
 
         res.sendRedirect("/home");
+    }
+
+    @Override
+    public void destroy() {
+        if(connection == null) return;
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

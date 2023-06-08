@@ -26,12 +26,12 @@ public class GoToLogin extends HttpServlet {
             Class.forName(driver);
             Connection conn = DriverManager.getConnection(url, user, password);
             // Init Database (serve solo per inizializzare il db)
-            // UsersDAO users = new UsersDAO(conn);
-            // TreeDAO tree = new TreeDAO(conn);
-            // users.setupUsersTable();
-            // users.initUsers();
-            // tree.setupCatalogTable();
-            // tree.initTree();
+            UsersDAO users = new UsersDAO(conn);
+            TreeDAO tree = new TreeDAO(conn);
+            users.setupUsersTable();
+            users.initUsers();
+            tree.setupCatalogTable();
+            tree.initTree();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             // throw new UnavailableException("Can't load database driver");

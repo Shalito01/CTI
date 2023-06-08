@@ -35,13 +35,6 @@ public class CopyServlet extends HttpServlet {
 
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-       // HttpSession session = req.getSession(false);
-
-       // if(session == null) {
-       //     res.sendRedirect("/login.html");
-       //     return;
-       // }
-
         String id = req.getParameter("old_id");
 
         TreeDAO service = new TreeDAO(connection);
@@ -79,7 +72,7 @@ public class CopyServlet extends HttpServlet {
 
             int destCount = service.getNumChildren(new_id);
             if(destCount >= 9)
-                throw new RuntimeException("Impossibile aggiungere figli a queseta destinazione");
+                throw new RuntimeException("Impossibile aggiungere figli a questa destinazione");
 
             List<NodeBean> subTree = service.getSottoAlbero(old_id);
 
@@ -89,9 +82,9 @@ public class CopyServlet extends HttpServlet {
 
 
         } catch (Exception e) {
+            // Error Handling
             e.printStackTrace();
             return;
-            // Error Handling
         }
 
         res.sendRedirect("/home");

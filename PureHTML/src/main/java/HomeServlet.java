@@ -38,14 +38,6 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        //HttpSession session = req.getSession(false);
-        //if (session == null) {
-        //    res.setContentType("text/html;charset=UTF-8");
-        //    res.setHeader("pragma", "no-cache");
-        //    res.setHeader("Cache-Control", "no-cache");
-        //    res.sendRedirect("/login.html");
-        //    return;
-        //}
 
         TreeDAO service = new TreeDAO(connection);
 

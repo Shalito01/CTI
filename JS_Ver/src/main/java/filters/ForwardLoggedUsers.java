@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter({"/login", "/login.jsp", "/"})
+@WebFilter({"/login", "/login.html", "/"})
 public class ForwardLoggedUsers extends HttpFilter implements Filter {
 	private static final long serialVersionUID = 1L;
 
@@ -22,15 +22,13 @@ public class ForwardLoggedUsers extends HttpFilter implements Filter {
 
 		HttpServletRequest HTTPRequest = (HttpServletRequest) request;
 		HttpServletResponse HTTPResponse = (HttpServletResponse) response;
-		HttpSession session = HTTPRequest.getSession(false);
+		HttpSession session = HTTPRequest.getSession();
 
-		if(session != null && session.getAttribute("user") != null) {
-			System.err.println("Redirect /home" + session.getAttribute("user"));
-			HTTPResponse.sendRedirect("/home");
+		if(session.getAttribute("user") != null) {
+			HTTPResponse.sendRedirect("/home.html");
 			return;
 		}
 
-		System.err.println("Allow /login");
 		chain.doFilter(request, response);
 	}
 }

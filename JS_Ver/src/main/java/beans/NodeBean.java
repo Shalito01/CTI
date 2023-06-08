@@ -1,17 +1,35 @@
 package beans;
 
-public class NodeBean {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class NodeBean implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	//Ogni nodo dell'albero è fatto cosi
 	private String id;
-	private String NomeCatalogo;
-	private String IdPadre;
-	private int numFigli;
+	private String nomeCatalogo;
+	private String idPadre;
+	private List<NodeBean> subCatalogs;
 	private boolean selected = false;
 
 	public NodeBean(String id, String nomeCatalogo, String idPadre) {
 		this.id = id;
-		this.NomeCatalogo = nomeCatalogo;
-		this.IdPadre = idPadre;
+		this.nomeCatalogo = nomeCatalogo;
+		this.idPadre = idPadre;
+	}
+
+	public void setChildrens(List<NodeBean> nodes) {
+		this.subCatalogs = nodes;
+	}
+
+	public void addChild(NodeBean node) {
+		this.subCatalogs.add(node);
+	}
+
+	public List<NodeBean> getChilds() {
+		return this.subCatalogs;
 	}
 
 	public boolean isSelected() {
@@ -22,7 +40,6 @@ public class NodeBean {
 		this.selected = select;
 	}
 
-	//Ora scrivo getter e setter
 	public String getId()
 	{
 		return this.id;
@@ -30,7 +47,7 @@ public class NodeBean {
 
 	public String getName()
 	{
-		return this.NomeCatalogo;
+		return this.nomeCatalogo;
 	}
 
 	public void setID (String newID)
@@ -40,25 +57,21 @@ public class NodeBean {
 
 	public void setName (String newName)
 	{
-		this.NomeCatalogo = newName;
+		this.nomeCatalogo = newName;
 	}
 
 	public String getIdPadre()
 	{
-		return this.IdPadre;
+		return this.idPadre;
 	}
 
 	public void setIdPadre(String NewName)
 	{
-		this.IdPadre = NewName;
+		this.idPadre = NewName;
 	}
 
 	public int getNumFigli() {
-		return this.numFigli;
-	}
-
-	public void setlumFigli(int figli) {
-		this.numFigli = figli;
+		return this.subCatalogs.size();
 	}
 
 	@Override
@@ -66,7 +79,7 @@ public class NodeBean {
 		StringBuffer buffer = new StringBuffer("");
 		buffer.append(id);
 		buffer.append(" ");
-		buffer.append(NomeCatalogo);
+		buffer.append(nomeCatalogo);
 		return buffer.toString();
 	}
 }

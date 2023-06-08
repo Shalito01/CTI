@@ -149,7 +149,7 @@ public class TreeDAO {
 				" node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
 				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (parent_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 	}
