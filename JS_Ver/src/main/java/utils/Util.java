@@ -32,6 +32,11 @@ public class Util {
         res.getWriter().println(message);
     }
 
+    public static void sendError(HttpServletResponse res, int status, String error) throws IOException {
+        res.setStatus(status);
+        res.getWriter().println("Wrong username and/or password");
+    }
+
     public static void recursionOnList(NodeBean root, List<NodeBean> tree) throws SQLException {
         if(root == null) return;
 		
@@ -48,16 +53,16 @@ public class Util {
             recursionOnList(x, tree);
         }
     }
-    public static void recursion(NodeBean root, TreeDAO service) throws SQLException {
-        if(root == null) return;
+    // public static void recursion(NodeBean root, TreeDAO service) throws SQLException {
+    //     if(root == null) return;
 		
-		var childs = service.getChildList(root);
-		root.setChildrens(childs);
+	// 	var childs = service.getChildList(root);
+	// 	root.setChildrens(childs);
 			  
-        if(root.getChilds() == null || root.getChilds().size() == 0) return;
+    //     if(root.getChilds() == null || root.getChilds().size() == 0) return;
 
-        for(var x : root.getChilds()) {
-            recursion(x, service);
-        }
-    }
+    //     for(var x : root.getChilds()) {
+    //         recursion(x, service);
+    //     }
+    // }
 }

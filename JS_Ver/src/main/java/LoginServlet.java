@@ -47,15 +47,13 @@ public class LoginServlet extends HttpServlet {
 
         // Sanitize User input
         if(user == null || !user.matches(whitelist)) { // || !pass.matches(whitelist)) {
-            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            res.getWriter().println("Wrong fromat for username or password");
+            Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Wrong fromat for username or password");
             return;
         }
 
 
         if(!userDAO.checkCredentials(user, pass)) {
-            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            res.getWriter().println("Wrong username and/or password");
+            Util.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Wrong username and/or password");
             return;
         }
     

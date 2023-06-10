@@ -20,8 +20,9 @@ import dao.TreeDAO;
 import utils.JsonVars;
 import utils.Util;
 
-@WebServlet("/catalog")
-public class HomeServlet extends HttpServlet {
+@WebServlet("/catalog/subcatalog")
+@MultipartConfig
+public class SubtreeServlet extends HttpServlet {
 
     private Connection connection;
     private List<NodeBean> tree;
@@ -44,23 +45,56 @@ public class HomeServlet extends HttpServlet {
         }
     }
 
+    public void noDbUpdateId(List<NodeBean> sottoAlbero, String old_root, String new_root, int numCount) {
+		String root = new_root + String.valueOf(numCount + 1);
+
+        
+        for(var nodo : sottoAlbero) {
+            if(nodo == sottoAlbero.get(0)){
+                nodo.setIdPadre(new_root);
+                nodo.setID(root);
+            } else {
+                nodo.setID(root + nodo.getId().substring(old_root.length()));
+                nodo.setIdPadre(root + nodo.getIdPadre().substring(old_root.length()));
+            }
+        }
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 
+        String new_id = req.getParameter("new_id");
+        String old_id = req.getParameter("old_id");
+
         TreeDAO service = new TreeDAO(connection);
+        // var req_uri = req.getRequestURI().split("/");
+        // String id = req_uri[req_uri.length - 1];
+
+        // try {
+        //     Integer.parseInt(id);
+        // } catch (NumberFormatException e) {
+        //     Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Invalid id");
+        // }
         
         // Fill Directory Tree
-        NodeBean root = new NodeBean("", "ROOT", null);
-
+        NodeBean root;
+        
 
         try {
-            tree = service.getAlberoCompleto();
+            tree = service.getSottoAlbero(old_id);
+            root = tree.get(0);
+            int num = service.getNumChildren(new_id);
 
-            Util.recursionOnList(root, tree);
-        } catch (SQLException e) {
+            if(num == 9) throw new Exception("Già al max");
+
+            noDbUpdateId(tree, old_id, new_id, num);
+
+            Util.recursionOnList(root, tree.subList(1, tree.size()));
+        } catch (Exception e) {
             e.printStackTrace();
             // Error Handling
+            Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();

@@ -131,11 +131,11 @@ public class TreeDAO {
 		stmt.executeUpdate();
 	}
 
-	public void modificaNome(NodeBean n, String catalog_name) throws SQLException {
-		String query = "UPDATE catalog_name SET catalogo = ? WHERE id = ?";
+	public void modificaNome(String id, String catalog_name) throws SQLException {
+		String query = "UPDATE catalogo SET catalog_name = ? WHERE id = ?";
 		PreparedStatement pstatement = conn.prepareStatement(query);
-		pstatement.setString(2, n.getId());
 		pstatement.setString(1, catalog_name);
+		pstatement.setString(2, id);
 		pstatement.executeUpdate();
 	}
 
@@ -165,7 +165,7 @@ public class TreeDAO {
 				" node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
 				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (parent_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE CASCADE)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 	}

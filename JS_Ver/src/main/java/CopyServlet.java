@@ -1,5 +1,9 @@
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,8 +13,11 @@ import java.util.List;
 
 import beans.NodeBean;
 import dao.TreeDAO;
+import utils.JsonVars;
+import utils.Util;
 
 @WebServlet("/copy")
+@MultipartConfig
 public class CopyServlet extends HttpServlet {
     private Connection connection;
     private List<NodeBean> tree;
@@ -37,6 +44,8 @@ public class CopyServlet extends HttpServlet {
 
         String old_id = req.getParameter("old_id");
         String new_id = req.getParameter("new_id");
+        if(new_id.equals("ROOT")) new_id = "";
+        if(old_id.equals("ROOT")) old_id = "";
 
         try {
             // Eseguo i controlli sui nodi
@@ -52,14 +61,18 @@ public class CopyServlet extends HttpServlet {
             // Update a db con inserimento nodi
             service.copySubTree(subTree, subTree.get(0).getId(), destCount, new_id);
 
+            List<NodeBean> new_tree = service.getSottoAlbero(new_id);
+            NodeBean root = new_tree.get(0);
+            new_tree.remove(0);
+            Util.recursionOnList(root, new_tree);
+            Gson gson = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
+            Util.send(res, new JsonVars("tree", gson.toJson(root)));
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
             // Error Handling
         }
-
-        res.sendRedirect("/home");
     }
 
     @Override

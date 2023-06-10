@@ -5,12 +5,18 @@
 		return;
 	}
 
-	var header,
-		modal,
+	var old_id,
+		new_id,
 		catalog_tree,
-		dragTarget,
-		username,
 		page = new PageOrchestrator();
+	
+	var confirmed = false;
+	var only_once = true;
+	var undo = false;
+	var sendDict = [];
+
+	var save_btn = document.getElementById("save-btn");
+	save_btn.style.display = "none";
 
 	window.addEventListener("load", () => {
 		page.start();
@@ -34,6 +40,7 @@
 
 	function CatalogTree(catalog_list) {
 		this.catalog_list = catalog_list;
+		var dataTransfer;
 
 		this.show = (to_fetch = true) => {
 			if(!to_fetch) {
@@ -59,13 +66,25 @@
 			});
 		};
 
-		this.print = (tree, parent) => {
+		this.updateSubTree = (tree) => {
+			var x = document.getElementById(tree.idPadre);
+			x.removeChild(document.getElementById(tree.id));
+
+			this.print(tree, x);
+		}
+
+		this.print = (tree, parent, selected = false) => {
 			if (!tree.hasOwnProperty("id")) return;
 
 			var div = document.createElement("div");
 			div.classList.add("node");
 			div.id = tree["id"];
 			div.draggable = true;
+
+			if(selected) div.classList.add("selected");
+
+			var div_content = document.createElement("div");
+			div_content.classList.add("node-content");
 
 			var nome = document.createElement("span");
 			nome.classList.add("nomeCatalogo");
@@ -79,17 +98,166 @@
 			idSpan.classList.add("id-catalogo");
 			idSpan.textContent = tree["id"];
 
+			var input_name = document.createElement("input");
+			input_name.style.display = "none";
+
 			if (tree["nomeCatalogo"] === "ROOT") {
 				nome.classList.add("root");
+				nome.textContent = "--- RADICE: COPIA QUI ---"
+				div.id = "ROOT";
 				idCatalogo.classList.add("root");
 				idSpan.classList.add("root");
+			} else {
+				input_name.type = "text";
+				input_name.name = "catalog_name";
 			}
-			div.appendChild(idCatalogo);
-			div.appendChild(idSpan)
-			div.appendChild(nome);
+			div_content.appendChild(idCatalogo);
+			div_content.appendChild(idSpan)
+			div_content.appendChild(nome);
+			div_content.appendChild(input_name);
+			div.appendChild(div_content);
 
 			parent.appendChild(div);
 			// console.log("Appeso " + div.id);
+
+			nome.addEventListener("click", (e) => {
+				if(this.textContent === "ROOT") return;
+				nome.style.display = "none";
+				input_name.style.display = "block";
+
+				document.getElementById("up-id").value = div.id;
+				
+				input_name.addEventListener("focusout", (e) => {
+					e.preventDefault();
+					if(input_name.textContent === "") {
+						input_name.textContent = "";
+						input_name.style.display = "none";
+						nome.style.display = "block";
+					}
+
+					input_name.value = sanitize(input_name.value);
+
+					var form = document.getElementById("update-form");
+					document.getElementById("up-name").value = input_name.value;
+					
+					if(!form.checkValidity()) {
+						window.alert("Error parsing input");
+						form.reportValidity();
+						return;
+					}
+
+					sendRequest("POST", "/catalog/update", form, (req) => {
+						if(req.readyState != XMLHttpRequest.DONE) return;
+
+						if(req.status != 200) {
+							window.alert(req.responseText);
+							window.location.reload();
+							return;
+						}
+
+						var res = JSON.parse(req.responseText);
+						// console.log(res);
+						nome.textContent = res.name;
+					});
+
+					input_name.textContent = "";
+					input_name.style.display = "none";
+					nome.style.display = "block";
+				});
+			});
+			
+
+	div.addEventListener("dragstart", (e) => {
+		console.log("DRAGSTART");
+		console.log(e);
+		dataTransfer = e.target.id;
+		e.dataTransfer.dropEffect = "copy";
+		document.getElementById(dataTransfer).style.cursor = "grabbing";
+	});
+
+	div.addEventListener("dragenter", (e) => {
+		var el = e.target;
+		if(!(e.target.tagName === "DIV")) {
+			el = e.target.parentNode;
+		}
+		el.style.backdropFilter = "drop-shadow(0 0 1rem black)";
+		el.style.background = "aqua";
+	});
+	div.addEventListener("dragleave", (e) => {
+		var el = e.target;
+		if(!(e.target.tagName === "DIV")) {
+			el = e.target.parentNode;
+		}
+		el.style.backdropFilter = "none";
+		el.style.background = "transparent";
+	});
+	
+	div.addEventListener("dragover", (e) => {
+		e.preventDefault();
+	});
+
+	div.addEventListener("dragend", (e) => {
+		e.preventDefault();
+		e.target.style.cursor = "grab";
+	});
+
+	div.addEventListener("drop", (e) => {
+		e.preventDefault();
+		e.dataTransfer.dropEffect = "copy";
+		var el = e.target;
+		if(!(e.target.tagName === "DIV")) {
+			el = e.target.parentNode;
+		}
+		el.style.backdropFilter = "none";
+		el.style.background = "transparent";
+		console.log(e.target.closest("div").parentNode);
+		var new_id = document.getElementById(e.target.closest("div").parentNode.id);
+		if(new_id.childElementCount == 10) {
+			window.alert("Already 9 children for this node. You can't copy here");
+			return;
+		}
+
+		if(old_id === new_id.id) return;
+		
+		if (!confirmed && !undo) {
+			confirmed = confirm("Do you really want to copy here?");
+			if (!confirmed) {
+				undo = true;
+				return;
+			}
+		}
+		if(only_once && !undo) {
+			old_id = dataTransfer;
+			console.log(`OLD: ${old_id} -- NEW: ${new_id.id}`);
+			var url = `/catalog/subcatalog?old_id=${old_id}&new_id=${new_id.id}`;
+			
+
+			sendRequest("GET", url, null, (req) => {
+				if(req.readyState != XMLHttpRequest.DONE) return;
+
+				if(req.status != 200) {
+					window.alert(req.responseText);
+					return;
+				}
+
+				var msg = JSON.parse(req.responseText);
+				
+				this.print(msg.tree, new_id, true);
+
+			});
+			// var node_copy = document.getElementById(old_id).cloneNode(true);
+			// node_copy.removeAttribute("id");	
+			// node_copy.draggable = false;
+			// new_id.appendChild(node_copy);
+			sendDict.push({
+				"old_id": old_id,
+				"new_id": new_id.id 
+			});
+			// node_copy.classList.add("selected");
+			document.getElementById("save-btn").style.display = "block";
+			only_once = false;
+		}
+	});
 
 			if (tree["subCatalogs"] == null || tree["subCatalogs"].length == 0) return;
 
@@ -100,169 +268,7 @@
 
 		};
 
-		this.buildTree = (json_catalog, onNameClick = null, onFormClick = null) => {
-			if(json_catalog.hasOwnProperty("tree")) return;
 
-			var nodes = json_catalog;
-			var div = document.createElement("div");
-			div.classList.add("node");
-			div.draggable = true;
-
-			var name, id;
-			catalog_list.innerHTML = "";
-
-
-			if(onNameClick == null) {
-				name = document.createElement("span");
-				div.addEventListener("dragend", () => {
-					this.handleDragEnd();
-				});
-			} else {
-				name = document.createElement("a");
-				name.addEventListener("click", () => {
-					onNameClick(json_catalog.id);
-				});
-
-				div.addEventListener("dragstart", (e) => {
-					for(subnode of document.getElementsByClassName("node"))
-					{
-						subnode.addEventListener("dragover", this.preventDefault);
-					};
-				});
-
-			}
-
-			if(nodes.length == 0) {
-				catalog_list.innerHTML = "You don't have any category. Just create one!";
-			}
-
-			nodes.forEach((item) => {
-				var node = document.createElement("div");
-				node.appendChild(this.buildListItem(item, "", "", null, this.handleCreateClick));
-				node.appendChild(this.buildSubList(item));
-
-				catalog_list.appendChild(node);
-			});
-
-			this.buildSubList = (sublistJson) => {
-				if(!sublistJson.hasOwnProperty("subCatalogs")) return;
-				var subCatalogs = sublistJson.subCatalogs;
-
-				var subCatalogList = document.createElement("div");
-
-				subCatalogs.forEach((catalog) => {
-					var subcatalog = document.createElement("div");
-					subcatalog.className = "catalog";
-
-					subcatalog.appendChild(this.buildListItem(catalog, "", "", null, this.handleCreateClick, true));
-					subcatalog.appendChild(this.buildSubList(catalog));
-
-					subcatalog.addEventListener("drop", (e) =>{
-						e.preventDefault();
-
-						// Prompt Confirm
-					});
-
-					subCatalogList.appendChild(subcatalog);
-				});
-			
-				return subCatalogList;
-			};
-
-			this.buildListItem = (json, icon, icons, onNameClick = null, onFormClick = null, isDocumentForm = false) => {
-				var div = document.createElement("div");
-
-				div.id = json.id;
-				div.classList.add("node");
-				div.draggable = true;
-
-				var name;
-				if(onNameClick == null) {
-					name = document.createElement("span");
-
-					div.addEventListener("dragend", () => {
-						this.handleDragEnd();
-					});
-
-				} else {
-					name = document.createElement("a");
-					name.addEventListener("click", () => {
-						onNameClick(json.id);
-					});
-				
-					div.addEventListener("dragstart", (e) => {
-						for(subDiv of document.getElementsByClassName("node")) {
-							subDiv.addEventListener("dragover", this.preventDefault);
-						};
-
-						var thisDiv = e.target.closest(".node");
-						thisDiv.classList.add("deselected");
-						thisDiv.removeEventListener("dragover", this.preventDefault);
-						
-						this.handleDragStart("Catalog", json);
-					});
-
-					div.addEventListener("dragend", () => {
-						for(subDiv of document.getElementsByClassName("node")) {
-							subDiv.removeEventListener("dragover", this.preventDefault);
-							subDiv.classList.remove("deselected");
-						}
-
-						this.handleDragEnd();
-					});
-				}
-
-				name.textContent = json.nomeCatalogo;
-				div.appendChild(name);
-
-				if(onFormClick != null) {
-					var addItem = document.createElement("a");
-					addItem.classList.add("button");
-					addItem.textContent = "+";
-					addItem.classList.add("add-button");
-					addItem.addEventListener("click", (event) => {
-						var target = event.target.closest(".add-button");
-						
-						if (target.textContent === "+") {
-							target.innerHTML = "&#8722;";
-							enable(formItem);
-						} else {
-							target.textContent = "+";
-							disable(formItem);
-						}
-					})
-
-					var innerHTML = `<input name="old_id" type="hidden" value="${json.id}">`;
-					div.addEventListener("dragstart", () => {
-						this.handleDragStart("NODE");
-					});
-
-					formItem.innerHTML = innerHTML;
-					// formItem.classList.add("inline-form");
-					// formItem.classList.add("h-container");
-					
-					// var formButton = document.createElement("input");
-					// formButton.classList.add("button");
-					// formButton.value = "Create";
-					// formButton.type = "submit";
-					// formButton.addEventListener("click", (event) => {
-					// 	event.preventDefault();
-					// 	onFormClick(event.target.closest("form"), () => {
-					// 		enable(addItem);
-					// 		disable(formItem);
-					// 	});
-					// });
-					// formItem.appendChild(formButton);
-					// formItem.classList.add("disabled");
-					
-					div.appendChild(addItem);
-					div.appendChild(formItem);
-				}
-
-			};
-
-			return div;
-		};
 	
 		this.handleCreateClick = (form, callback = null) => {
 			if(form == null) return;
@@ -280,33 +286,52 @@
 					return;
 				}
 
-				if(callback != null) callback();
-
 				this.show(true);
 			});
 		};
 
-		this.handleDragStart = (json) => {
-			dragTarget = { id: json.id, nomeCatalogo: json.nomeCatalogo };
-		};
-
-		this.handleDragEnd = () => {
-			dragTarget = null;
-		};
-
-		this.preventDefault = (e) => {
-			e.preventDefault();
-		};
 
 		this.hide = () => {
 			disable(this.catalog_list);
 		};
 	}
 
+	save_btn.addEventListener("click", () => {
+		confirmed = false;
+		undo = false;
+		only_once = true;
+
+		document.querySelectorAll(".selected").forEach((e) => e.classList.remove("selected"));
+		
+		if(old_id == null && new_id == null) return;
+		
+		var form = document.getElementById("copy-form");
+		document.getElementById("cp-oid").value = sendDict[0].old_id;
+		document.getElementById("cp-nid").value = sendDict[0].new_id;
+		
+		if(!form.checkValidity()) {
+			window.alert("Error parsing input");
+			form.reportValidity();
+			return;
+		}
+
+		sendRequest("POST", "copy", form, (req) => {
+			if(req.readyState != XMLHttpRequest.DONE) return;
+
+			if(req.status != 200) {
+				window.alert(req.responseText);
+				return;
+			}
+
+			var msg = JSON.parse(req.responseText);
+
+			catalog_tree.updateSubTree(msg.tree);
+		});
+
+		document.getElementById("save-btn").style.display = "none";
+	});
+
 	
-
-
-
 	function PageOrchestrator() {
 		this.start = () => {
 			username = sessionStorage.getItem("username");
@@ -329,8 +354,4 @@
 			catalog_tree.show();
 		};
 	}
-
-
-
-
 })();

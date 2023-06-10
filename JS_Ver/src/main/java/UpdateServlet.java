@@ -16,6 +16,7 @@ import utils.JsonVars;
 import utils.Util;
 
 @WebServlet("/catalog/update")
+@MultipartConfig
 public class UpdateServlet extends HttpServlet {
 
     private Connection connection;
@@ -41,20 +42,22 @@ public class UpdateServlet extends HttpServlet {
 
 
     @Override
-    public void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 
-        TreeDAO service = new TreeDAO(connection);
+        TreeDAO dao = new TreeDAO(connection);
+        String id = req.getParameter("id");
+        String name = req.getParameter("catalog_name");
 
         try {
-            tree = service.getAlberoCompleto();
-
+            dao.modificaNome(id, name);
         } catch (SQLException e) {
             e.printStackTrace();
+            Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erroe di modifica nel DB!");
             // Error Handling
         }
 
 
-        Util.send(res, new JsonVars("tree", new Gson().toJson(tree)));
+        Util.send(res, new JsonVars("name", name));
     }
 
     @Override
