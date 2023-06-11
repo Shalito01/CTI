@@ -13,7 +13,7 @@
  import javax.servlet.http.HttpSession;
 
 
- @WebFilter({"/home.html","/catalog/subcatalog", "/catalog", "/copy", "/catalog/update"})
+ @WebFilter({"/home.html", "/catalog/subcatalog", "/catalog", "/copy", "/catalog/update"})
  public class BlockUsers extends HttpFilter implements Filter {
  	private static final long serialVersionUID = 1L;
 

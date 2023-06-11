@@ -104,17 +104,6 @@ public class TreeDAO {
 
 			System.err.println("SOS " + id + " --- " + idPadre + " --- " + categoria);
 			inserisciUnFiglio(id, categoria, idPadre);
-
-			// pstatement = conn.prepareStatement(query);
-			// pstatement.setString(1, id);
-			// pstatement.setString(2, categoria);
-			// pstatement.executeUpdate();
-
-			// query = "INSERT into catalogo_figli(node_id, parent_id) VALUES (?,?)";
-			// pstatement = conn.prepareStatement(query);
-			// pstatement.setString(1, id);
-			// pstatement.setString(2, idPadre);
-			// pstatement.executeUpdate();
 		}
 	}
 

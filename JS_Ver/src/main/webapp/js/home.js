@@ -23,10 +23,12 @@
 		page.show();
 	});
 
+	var insert_btn = document.getElementById("insert-btn");
+
 	var logout_btn = document.getElementById("logout-btn");
 	logout_btn.addEventListener("click", () => {
 		sendRequest("GET", "logout", null, (req) => {
-			if(req.readyState != XMLHttpRequest.DONE) return;
+			if(req.readyState !== XMLHttpRequest.DONE) return;
 
 			if(req.status != 200) {
 				window.alert(req.responseText);
@@ -49,7 +51,7 @@
 			}
 
 			sendRequest("GET", "catalog", null, (req) => {
-				if(req.readyState != XMLHttpRequest.DONE) return;
+				if(req.readyState !== XMLHttpRequest.DONE) return;
 
 				var msg = req.responseText;
 
@@ -65,6 +67,7 @@
 				enable(this.catalog_list);
 			});
 		};
+
 
 		this.updateSubTree = (tree) => {
 			var x = document.getElementById(tree.idPadre);
@@ -133,6 +136,7 @@
 						input_name.textContent = "";
 						input_name.style.display = "none";
 						nome.style.display = "block";
+						return;
 					}
 
 					input_name.value = sanitize(input_name.value);
@@ -147,7 +151,7 @@
 					}
 
 					sendRequest("POST", "/catalog/update", form, (req) => {
-						if(req.readyState != XMLHttpRequest.DONE) return;
+						if(req.readyState !== XMLHttpRequest.DONE) return;
 
 						if(req.status != 200) {
 							window.alert(req.responseText);
@@ -212,7 +216,7 @@
 		el.style.background = "transparent";
 		console.log(e.target.closest("div").parentNode);
 		var new_id = document.getElementById(e.target.closest("div").parentNode.id);
-		if(new_id.childElementCount == 10) {
+		if(new_id.children >= 10) {
 			window.alert("Already 9 children for this node. You can't copy here");
 			return;
 		}
@@ -233,7 +237,7 @@
 			
 
 			sendRequest("GET", url, null, (req) => {
-				if(req.readyState != XMLHttpRequest.DONE) return;
+				if(req.readyState !== XMLHttpRequest.DONE) return;
 
 				if(req.status != 200) {
 					window.alert(req.responseText);
@@ -268,35 +272,54 @@
 
 		};
 
+		insert_btn.addEventListener("click", (e) => {
+			e.preventDefault();
+			var in_name = sanitize(document.getElementById("in-name").value);
+			var in_pid = document.getElementById("in-pid").value;
 
-	
-		this.handleCreateClick = (form, callback = null) => {
-			if(form == null) return;
-
-			if(!form.checkValidity()) {
-				form.reportValidity();
+			if(!validate_id(in_pid) || !validate_name(in_name)) {
+				window.alert("Errore formato input");
 				return;
 			}
 
-			sendRequest("POST", "catalog", form, (req) => {
-				if(req.readyState != XMLHttpRequest.DONE) return;
+			if(in_pid === "") in_pid = "ROOT";
 
+			if(document.getElementById(in_pid) === null) {
+				window.alert("Nodo padre non presente");
+				return;
+			} else if(document.getElementById(in_pid).children.length >= 10) {
+				window.alert("Questo Nodo padre ha già 9 figli");
+				return;
+			}
+
+			var form = document.getElementById("insert-form");
+
+			if(!form.checkValidity()) {
+				console.log("calidate");
+				form.reportValidity();
+				return;
+			}
+			
+			sendRequest("POST", "/catalog", form, (req) => {
+				if(req.readyState !== XMLHttpRequest.DONE) return;
+				console.log("made REq");
 				if(req.status != 200) {
 					window.alert(req.responseText);
 					return;
 				}
-
-				this.show(true);
+				var msg = JSON.parse(req.responseText).msg;
+				this.print(msg, document.getElementById(msg.idPadre));
 			});
-		};
 
+		});
 
 		this.hide = () => {
 			disable(this.catalog_list);
 		};
 	}
 
-	save_btn.addEventListener("click", () => {
+	save_btn.addEventListener("click", (e) => {
+		e.preventDefault();
 		confirmed = false;
 		undo = false;
 		only_once = true;
@@ -316,7 +339,7 @@
 		}
 
 		sendRequest("POST", "copy", form, (req) => {
-			if(req.readyState != XMLHttpRequest.DONE) return;
+			if(req.readyState !== XMLHttpRequest.DONE) return;
 
 			if(req.status != 200) {
 				window.alert(req.responseText);
@@ -325,7 +348,7 @@
 
 			var msg = JSON.parse(req.responseText);
 
-			catalog_tree.updateSubTree(msg.tree);
+			// catalog_tree.updateSubTree(msg.tree);
 		});
 
 		document.getElementById("save-btn").style.display = "none";
@@ -339,14 +362,6 @@
 			catalog_tree = new CatalogTree(
 				document.getElementById("tree-wrapper")
 			);
-
-			// modal = new Modal(
-			// 	document.getElementById("modal"),
-			// 	document.getElementById("close-button"),
-			// 	document.getElementById("content-name"),
-			// 	document.getElementById("confirm-button")
-			// );
-            // modal.start();
 
 		};
 

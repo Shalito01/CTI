@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter({"/login", "/login.html", "/"})
+@WebFilter({"/login", "/login.html"})
 public class ForwardLoggedUsers extends HttpFilter implements Filter {
 	private static final long serialVersionUID = 1L;
 

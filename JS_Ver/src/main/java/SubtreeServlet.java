@@ -65,18 +65,19 @@ public class SubtreeServlet extends HttpServlet {
 
         String new_id = req.getParameter("new_id");
         String old_id = req.getParameter("old_id");
+        if(old_id.equals("ROOT")) old_id = "";
+        if(new_id.equals("ROOT")) new_id = "";
 
         TreeDAO service = new TreeDAO(connection);
-        // var req_uri = req.getRequestURI().split("/");
-        // String id = req_uri[req_uri.length - 1];
 
-        // try {
-        //     Integer.parseInt(id);
-        // } catch (NumberFormatException e) {
-        //     Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Invalid id");
-        // }
+        try {
+            if(!old_id.matches("^[1-9]*$") ||!new_id.matches("^[1-9]*$"))
+                throw new RuntimeException("Bad Input request");
+        } catch (RuntimeException e) {
+            Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
         
-        // Fill Directory Tree
         NodeBean root;
         
 

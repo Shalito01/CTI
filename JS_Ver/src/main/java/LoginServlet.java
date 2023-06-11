@@ -45,12 +45,14 @@ public class LoginServlet extends HttpServlet {
         String pass = req.getParameter("pass");
         UsersDAO userDAO = new UsersDAO(connection);
 
+        System.err.println(user + " --- " + pass);
         // Sanitize User input
         if(user == null || !user.matches(whitelist)) { // || !pass.matches(whitelist)) {
             Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Wrong fromat for username or password");
             return;
         }
 
+        System.err.println(user + " --- " + pass);
 
         if(!userDAO.checkCredentials(user, pass)) {
             Util.sendError(res, HttpServletResponse.SC_UNAUTHORIZED, "Wrong username and/or password");

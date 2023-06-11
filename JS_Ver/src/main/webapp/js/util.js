@@ -11,7 +11,8 @@ function sendRequest(method, url, form, callback, reset = true) {
 		request.send();
 	} else {
 		request.overrideMimeType("application/x-www-form-urlencoded");
-		request.send(new FormData(form));
+		var send = new FormData(form);
+		request.send(send);
 
 		if (reset) {
 			form.reset();
@@ -19,14 +20,24 @@ function sendRequest(method, url, form, callback, reset = true) {
 	}
 }
 
+function validate_name(string) {
+	const regx = /^[a-zA-Z0-9 ]+$/g;
+	return regx.test(string);
+}
+
+function validate_id(string) {
+	const regx = /^[0-9]*$/g;
+	return regx.test(string);
+}
+
 function sanitize(string) {
   const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#x27;',
-      "/": '&#x2F;',
+      '&': '#',
+      '<': '#',
+      '>': '#',
+      '"': '#',
+      "'": '#',
+      "/": '#',
   };
   const reg = /[&<>"'/]/ig;
   return string.replace(reg, (match)=>(map[match]));

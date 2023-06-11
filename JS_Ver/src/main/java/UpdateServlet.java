@@ -46,16 +46,24 @@ public class UpdateServlet extends HttpServlet {
 
         TreeDAO dao = new TreeDAO(connection);
         String id = req.getParameter("id");
+        if(id.equals("ROOT")) id = "";
         String name = req.getParameter("catalog_name");
+
+        try {
+            if(!id.matches("^[1-9]*$") || !name.matches("^[\\w\\d ]*$"))
+                throw new RuntimeException("Bad Input request");
+        } catch (RuntimeException e) {
+            Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
 
         try {
             dao.modificaNome(id, name);
         } catch (SQLException e) {
             e.printStackTrace();
-            Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erroe di modifica nel DB!");
+            Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore di modifica nel DB!");
             // Error Handling
         }
-
 
         Util.send(res, new JsonVars("name", name));
     }

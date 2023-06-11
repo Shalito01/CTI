@@ -7,6 +7,7 @@
         <script src="js/util.js" defer></script>
         <script src="js/home.js" defer></script>
         <link rel="stylesheet" href="css/home.css" />
+        <meta charset="UTF-8">
     </head>
     <body>
         <div class="header">
@@ -18,12 +19,19 @@
 
         </div>
 
+        <div class="footer">
+            <form id="insert-form" enctype="application/x-www-form-urlencoded">
+                <input id="in-name" type="text" name="name" placeholder="Category Name" value="" />
+                <input id="in-pid" type="number" name="parentId" placeholder="Parent ID" value="" />
+                <button id="insert-btn" type="submit">Insert</button>
+            </form>
+        </div>
 
         <form id="update-form" enctype="application/x-www-form-urlencoded" style="display: none;">
             <input id="up-id" name="id" value="" />
             <input id="up-name" name="catalog_name" value="" />
         </form>
-        <form id="copy-form"enctype="application/x-www-form-urlencoded" style="display: none;">
+        <form id="copy-form" enctype="application/x-www-form-urlencoded" style="display: none;">
             <input id="cp-oid" name="old_id" value="" />
             <input id="cp-nid" name="new_id" value="" />
         </form>

@@ -21,6 +21,7 @@ import utils.Util;
 public class CopyServlet extends HttpServlet {
     private Connection connection;
     private List<NodeBean> tree;
+    private static String whitelist = "^[\\w\\d!_#@$+-]*$"; //"^[a-zA-Z0-9!_#@^$+]*$";
 
     public void init() throws ServletException {
         try {
@@ -48,12 +49,20 @@ public class CopyServlet extends HttpServlet {
         if(old_id.equals("ROOT")) old_id = "";
 
         try {
+            if(!old_id.matches("^[1-9]*$") ||!new_id.matches("^[1-9]*$"))
+                throw new RuntimeException("Bad Input request");
+        } catch (RuntimeException e) {
+            Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
+
+        try {
             // Eseguo i controlli sui nodi
             TreeDAO service = new TreeDAO(connection);
 
             int destCount = service.getNumChildren(new_id);
             if(destCount >= 9)
-                throw new RuntimeException("Impossibile aggiungere figli a queseta destinazione");
+                throw new RuntimeException("Impossibile aggiungere figli a questa destinazione");
 
             List<NodeBean> subTree = service.getSottoAlbero(old_id);
 
@@ -70,8 +79,9 @@ public class CopyServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
             // Error Handling
+            Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
         }
     }
 
