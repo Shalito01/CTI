@@ -49,7 +49,7 @@ public class CopyServlet extends HttpServlet {
         if(old_id.equals("ROOT")) old_id = "";
 
         try {
-            if(!old_id.matches("^[1-9]*$") ||!new_id.matches("^[1-9]*$"))
+            if(!old_id.matches("^[1-9]*$") || !new_id.matches("^[1-9]*$"))
                 throw new RuntimeException("Bad Input request");
         } catch (RuntimeException e) {
             Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
@@ -59,6 +59,9 @@ public class CopyServlet extends HttpServlet {
         try {
             // Eseguo i controlli sui nodi
             TreeDAO service = new TreeDAO(connection);
+
+            if(!service.checkId(new_id) || !service.checkId(old_id))
+                throw new RuntimeException("Invalid id");
 
             int destCount = service.getNumChildren(new_id);
             if(destCount >= 9)

@@ -52,7 +52,9 @@ public class UpdateServlet extends HttpServlet {
         try {
             if(!id.matches("^[1-9]*$") || !name.matches("^[\\w\\d ]*$"))
                 throw new RuntimeException("Bad Input request");
-        } catch (RuntimeException e) {
+            if(!dao.checkId(id))
+                throw new RuntimeException("Invalid id");
+        } catch (Exception e) {
             Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }

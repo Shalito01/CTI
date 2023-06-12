@@ -86,6 +86,8 @@ public class HomeServlet extends HttpServlet {
         try {
             if(!parent_id.matches("^[1-9]*$") || !name.matches(whitelist))
                 throw new Exception("Formato parametri non corretto");
+            if(!service.checkId(parent_id))
+                throw new RuntimeException("Invalid id");
         } catch (Exception ex) {
             Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Errore nel formato dei parametri");
             return;

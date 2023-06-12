@@ -5,7 +5,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: 2fr 0.5fr 0.5fr;
+  grid-template-columns: 2fr 0.5fr;
   align-items: center;
   grid-gap: 5px;
   background-color: antiquewhite;
@@ -32,6 +32,16 @@
   font-size: 16px;
   border-radius: 4px;
   cursor: pointer;
+  display: block;
+}
+
+.node-content {
+	display: grid;
+	grid-auto-flow: column;
+	width: max-content;
+	justify-content: space-around;
+	gap: 1rem;
+	align-items: center;
 }
 
 #logout-btn:hover {
@@ -44,8 +54,8 @@
   color: white;
   border: none;
   padding: 10px 20px;
-  font-size: 16px;
   border-radius: 4px;
+  font-size: 16px;
   cursor: pointer;
   justify-self: auto;
 }
@@ -69,33 +79,26 @@
 }
 /* CSS for the tree wrapper */
 
-.node {
+.nodoView {
   display: grid;
-  grid-auto-flow: row;
-  justify-content: left;
-  padding: .2rem;
-  grid-gap: 5px;
+  width: max-content;
+  grid-auto-flow: column;
   background-color: transparent;
   transition: all linear .6s;
 }
 
-.node-content {
-	display: grid;
-	gap: .3rem;
-	grid-auto-flow: column;
-	grid-template-columns: min-content min-content 1fr;
-	justify-content: left;
+.nodoLink {
+	margin: 0;
+	padding: 10px 20px;
+	border-radius: 4px;
+	font-size: 16px;
+	border: none;
+	background-color: antiquewhite;
+	transition: all linear .3s;
 }
-
-.nomeCatalogo {
-  font-weight: bold;
-  width: max-content;
-  cursor: pointer;
-}
-
-.id-catalogo {
-  font-weight: bold;
-  width: max-content;
+.nodoLink:hover {
+	background-color: rgba(0,0,0,0.7);
+	color: white;
 }
 
 .root {
@@ -154,3 +157,15 @@
 #insert-btn:hover {
   background-color: #45a049;
 }
+
+#error {
+  color: #ff0000;
+  background-color: burlywood;
+  margin-top: 10px;
+  height: max-content;
+}
+
+a {
+  text-decoration: none;
+}
+

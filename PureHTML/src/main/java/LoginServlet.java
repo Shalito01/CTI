@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import dao.UsersDAO;
 
 @WebServlet("/login")
-public class LoginView extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection connection;
@@ -60,10 +60,6 @@ public class LoginView extends HttpServlet {
 
             session.setAttribute("user", user);
             session.setMaxInactiveInterval(30*60);
-//            Cookie username = new Cookie("user", user);
-//            username.setMaxAge(30*60);
-//            res.addCookie(username);
-//            res.setContentType("text/html");
         } else {
             RequestDispatcher rd = req.getRequestDispatcher("/login.jsp");
             String error = "Username or Password is wrong!";

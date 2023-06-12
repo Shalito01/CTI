@@ -38,6 +38,15 @@ public class CopyServlet extends HttpServlet {
         String id = req.getParameter("old_id");
 
         TreeDAO service = new TreeDAO(connection);
+
+        if(!id.matches("^[1-9]*$"))
+        {
+            // res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato id errato");
+            req.setAttribute("error", "Formato id errato");
+            req.getRequestDispatcher("/error.jsp").include(req, res);
+            return;
+        }
+
         try {
             tree = service.getAlberoCompleto();
             for (NodeBean nodeBean : tree) {
@@ -58,6 +67,10 @@ public class CopyServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             // Error Handling
+            // res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            req.setAttribute("error", e.getMessage());
+            req.getRequestDispatcher("/error.jsp").include(req, res);
+            return;
         }
     }
 
@@ -66,9 +79,19 @@ public class CopyServlet extends HttpServlet {
         String old_id = req.getParameter("old_id");
         String new_id = req.getParameter("new_id");
 
+        if(!old_id.matches("^[1-9]*$") || !new_id.matches("^[1-9]*$"))
+        {
+            req.setAttribute("error", "Formato id errato");
+            req.getRequestDispatcher("/error.jsp").include(req, res);
+            return;
+        }
+
         try {
             // Eseguo i controlli sui nodi
             TreeDAO service = new TreeDAO(connection);
+
+            if(!service.checkId(new_id) || !service.checkId(old_id))
+                throw new RuntimeException("Invalid id");
 
             int destCount = service.getNumChildren(new_id);
             if(destCount >= 9)
@@ -84,6 +107,9 @@ public class CopyServlet extends HttpServlet {
         } catch (Exception e) {
             // Error Handling
             e.printStackTrace();
+            // res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            req.setAttribute("error", e.getMessage());
+            req.getRequestDispatcher("/error.jsp").include(req, res);
             return;
         }
 

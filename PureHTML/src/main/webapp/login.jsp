@@ -4,9 +4,11 @@
 <html>
     <head>
         <title>Login</title>
+        <link rel="stylesheet" href="css/login.css">
+        <meta charset="UTF-8">
     </head>
     <body>
-        <form action="login" method="post">
+        <form id="login-form" action="login" method="post">
             <div class="form-cell">
                 <label>Username:</label>
                 <input type="text" name="user">
@@ -15,10 +17,10 @@
                 <label>Password: </label>
                 <input type="password" name="pass">
             </div>
-            <button class="login-btn" type="submit">Login</button>
+            <button id="login-btn" type="submit">Login</button>
 
             <% if(request.getAttribute("error") != null) { %>
-                <div id="error">
+                <div id="error" class="content error">
                     ${error}
                 </div>
             <% } %>

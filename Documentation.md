@@ -1,0 +1,17 @@
+# Report Pure HTML
+
+```sql
+CREATE TABLE catalogo(
+    id VARCHAR(255) NOT NULL,
+    CATALOG_NAME VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE catalogo_figli(
+    id INT AUTO_INCREMENT NOT NULL,
+    node_id VARCHAR(255) NOT NULL,
+    parent_id VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE
+);
+```

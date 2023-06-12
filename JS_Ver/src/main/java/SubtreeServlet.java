@@ -73,7 +73,9 @@ public class SubtreeServlet extends HttpServlet {
         try {
             if(!old_id.matches("^[1-9]*$") ||!new_id.matches("^[1-9]*$"))
                 throw new RuntimeException("Bad Input request");
-        } catch (RuntimeException e) {
+            if(!service.checkId(new_id) || !service.checkId(old_id))
+                throw new RuntimeException("Invalid id");
+        } catch (Exception e) {
             Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }

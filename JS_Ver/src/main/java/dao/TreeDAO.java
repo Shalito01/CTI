@@ -36,6 +36,19 @@ public class TreeDAO {
 	}
 
 
+	public boolean checkId(String parent) throws SQLException {
+		String sql = "SELECT COUNT(id) FROM catalogo WHERE id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, parent);
+		ResultSet res = stmt.executeQuery();
+
+		if(res.next() && res.getInt(1) == 1) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public List<NodeBean> getChildList(NodeBean root) throws SQLException {
 		List<NodeBean> sottoAlbero = new ArrayList<>();
 		String query = "SELECT c.id, c.catalog_name, cf.parent_id FROM catalogo as c JOIN catalogo_figli as cf ON c.id = cf.node_id WHERE cf.parent_id = ? ORDER BY cf.node_id";
@@ -154,7 +167,7 @@ public class TreeDAO {
 				" node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
 				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE CASCADE)";
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 	}

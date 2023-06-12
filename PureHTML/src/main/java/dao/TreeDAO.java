@@ -35,6 +35,22 @@ public class TreeDAO {
 		return sottoAlbero;
 	}
 
+
+	public List<NodeBean> getChildList(NodeBean root) throws SQLException {
+		List<NodeBean> sottoAlbero = new ArrayList<>();
+		String query = "SELECT c.id, c.catalog_name, cf.parent_id FROM catalogo as c JOIN catalogo_figli as cf ON c.id = cf.node_id WHERE cf.parent_id = ? ORDER BY cf.node_id";
+		PreparedStatement pstmt = conn.prepareStatement(query);
+		pstmt.setString(1, root.getId());
+		ResultSet result = pstmt.executeQuery();
+
+		while (result.next()) {
+			NodeBean n = new NodeBean(result.getString(1), result.getString(2), result.getString(3));
+			System.err.println(n.toString());
+			sottoAlbero.add(n);
+		}
+		return sottoAlbero;
+	}
+
 	public List<NodeBean> getAlberoCompleto() throws SQLException {
 		List<NodeBean> AlberoCompleto = new ArrayList<NodeBean>();
 		PreparedStatement pstatement = conn.prepareStatement("SELECT c.id, c.catalog_name, cf.parent_id FROM catalogo as c JOIN catalogo_figli as cf ON c.id = cf.node_id ORDER BY cf.node_id");
@@ -88,17 +104,6 @@ public class TreeDAO {
 
 			System.err.println("SOS " + id + " --- " + idPadre + " --- " + categoria);
 			inserisciUnFiglio(id, categoria, idPadre);
-
-			// pstatement = conn.prepareStatement(query);
-			// pstatement.setString(1, id);
-			// pstatement.setString(2, categoria);
-			// pstatement.executeUpdate();
-
-			// query = "INSERT into catalogo_figli(node_id, parent_id) VALUES (?,?)";
-			// pstatement = conn.prepareStatement(query);
-			// pstatement.setString(1, id);
-			// pstatement.setString(2, idPadre);
-			// pstatement.executeUpdate();
 		}
 	}
 
@@ -115,12 +120,25 @@ public class TreeDAO {
 		stmt.executeUpdate();
 	}
 
-	public void modificaNome(NodeBean n, String catalog_name) throws SQLException {
-		String query = "UPDATE catalog_name SET catalogo = ? WHERE id = ?";
+	public void modificaNome(String id, String catalog_name) throws SQLException {
+		String query = "UPDATE catalogo SET catalog_name = ? WHERE id = ?";
 		PreparedStatement pstatement = conn.prepareStatement(query);
-		pstatement.setString(2, n.getId());
 		pstatement.setString(1, catalog_name);
+		pstatement.setString(2, id);
 		pstatement.executeUpdate();
+	}
+
+	public boolean checkId(String parent) throws SQLException {
+		String sql = "SELECT COUNT(id) FROM catalogo WHERE id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, parent);
+		ResultSet res = stmt.executeQuery();
+
+		if(res.next() && res.getInt(1) == 1) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public int getNumChildren(String newParent) throws SQLException {
@@ -133,7 +151,7 @@ public class TreeDAO {
 			return res.getInt(1);
 		}
 
-		return 9999;
+		throw new SQLException("Id Not Found");
 	}
 
 	public void setupCatalogTable() throws SQLException {
@@ -149,7 +167,7 @@ public class TreeDAO {
 				" node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
 				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 	}

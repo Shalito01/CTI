@@ -1,0 +1,7 @@
+name: PureHTML
+packages:
+  - path: beans
+  - path: dao
+  - path: filters
+language: java
+appmap_dir: target/appmap
