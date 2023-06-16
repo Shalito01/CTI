@@ -73,4 +73,13 @@ public class LoginServlet extends HttpServlet {
         res.sendRedirect("/home");
     }
 
+    @Override
+    public void destroy() {
+        if(connection == null) return;
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

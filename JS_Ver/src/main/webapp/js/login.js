@@ -21,6 +21,7 @@
 	});
 
 	function sendForm(url, form) {
+		form = new FormData(form);
 		sendRequest("POST", url, form, function(req) {
 			if (req.readyState != XMLHttpRequest.DONE) return;
 

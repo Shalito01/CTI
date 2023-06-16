@@ -5,10 +5,10 @@
 
 .header {
   display: grid;
-  grid-template-columns: 2fr 0.5fr;
+  grid-template-columns: 2fr 0.5fr 0.5fr;
   align-items: center;
   grid-gap: 5px;
-  background-color: #282828;
+  background-color: antiquewhite;
   backdrop-filter: blur(10px);
   position: fixed;
   height: min-content;
@@ -22,7 +22,6 @@
 
 #title {
   font-size: 24px;
-  color: #fff;
 }
 
 #logout-btn {
@@ -40,6 +39,21 @@
   margin-right: 0;
 }
 
+#save-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  justify-self: auto;
+}
+
+#save-btn:hover {
+  background-color: #45a049;
+}
+
 #error {
   color: red;
 }
@@ -49,6 +63,10 @@
 	pointer-events: none;
 }
 
+#update-form,
+#copy-form {
+  display: none;
+}
 /* CSS for the tree wrapper */
 
 .node {
@@ -59,16 +77,15 @@
   grid-gap: 5px;
   background-color: transparent;
   transition: all linear .6s;
-  align-items: start;
+  align-item:start;
 }
 
 .node-content {
 	display: grid;
+	gap: .3rem;
 	grid-auto-flow: column;
-	width: max-content;
-	justify-content: space-around;
-	gap: 1rem;
-	align-items: center;
+	grid-template-columns: min-content min-content 1fr;
+	justify-content: left;
 }
 
 .nomeCatalogo {
@@ -107,11 +124,11 @@
 
 .footer {
   position: fixed;
-  bottom: 0;
+  bottom:0;
   left: 0;
   right: 0;
   display: grid;
-  background-color: #282828;
+  background-color: antiquewhite;
   justify-content: space-around;
   height: 7vh;
 }
@@ -125,7 +142,7 @@
 }
 
 #insert-btn {
-	background-color: #4444FF;
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -134,40 +151,7 @@
   cursor: pointer;
   justify-self: auto;
 }
-#error {
-  color: #ff0000;
-  background-color: #BBBBBB;
-  margin-top: 10px;
-  height: max-content;
-}
 
 #insert-btn:hover {
-	background-color: #240090;
-}
-
-a {
-  text-decoration: none;
-}
-
-.nodoView {
-  display: grid;
-  width: max-content;
-  grid-auto-flow: column;
-  background-color: transparent;
-  transition: all linear .6s;
-}
-
-.nodoLink {
-	margin: 0;
-	padding: 10px 20px;
-	border-radius: 4px;
-	font-size: 16px;
-	border: none;
-	background-color: #4444FF;
-  color: #fff;
-	transition: all linear .3s;
-}
-.nodoLink:hover {
-	background-color: #240090;
-	color: white;
+  background-color: #45a049;
 }

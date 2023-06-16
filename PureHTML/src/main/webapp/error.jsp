@@ -5,7 +5,7 @@
     <head>
         <title>ERROR</title>
         <link rel="stylesheet" href="css/error.css" />
-		<meta http-equiv='refresh' content='30; URL=/home'>
+		<meta http-equiv='refresh' content='15; URL=/home'>
         <meta charset="UTF-8">
     </head>
     <body style="display: grid; place-items: center;">

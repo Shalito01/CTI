@@ -14,6 +14,7 @@ import dao.UsersDAO;
 public class GoToLogin extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private Connection conn;
 
     public void init() {
         try {
@@ -24,7 +25,7 @@ public class GoToLogin extends HttpServlet {
             String user = context.getInitParameter("dbUser");
             String password = context.getInitParameter("dbPass");
             Class.forName(driver);
-            Connection conn = DriverManager.getConnection(url, user, password);
+            conn = DriverManager.getConnection(url, user, password);
             // Init Database (serve solo per inizializzare il db)
             // UsersDAO users = new UsersDAO(conn);
             // TreeDAO tree = new TreeDAO(conn);
@@ -47,4 +48,13 @@ public class GoToLogin extends HttpServlet {
         rd.forward(req, res);
     }
 
+    @Override
+    public void destroy() {
+        if(conn == null) return;
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

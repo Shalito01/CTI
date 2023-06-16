@@ -1,12 +1,10 @@
-
 body {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #282828;
 }
-
 
 #content-wrapper {
   background-color: #ffffff;
@@ -17,5 +15,26 @@ body {
 
 #error {
   color: #ff0000;
+  font-size: 24px;
   height: max-content;
+}
+
+.nodoLink {
+	margin-top: 1rem;
+	padding: 10px 20px;
+	border-radius: 4px;
+	font-size: 16px;
+	border: none;
+	background-color: #4444FF;
+    color: #fff;
+	transition: all linear .3s;
+}
+
+.nodoLink:hover {
+	background-color: #240090;
+	color: white;
+}
+
+#title {
+  color: #fff;
 }

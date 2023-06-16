@@ -81,6 +81,7 @@ public class HomeServlet extends HttpServlet {
         try {
             int parent = service.getNumChildren(parent_id);
             System.err.println(parent);
+            if(parent >= 9) throw new Exception("Parent Has already 9 childrens");
             String id = parent_id + String.valueOf(service.getNumChildren(parent_id) + 1);
             service.inserisciUnFiglio(id, name, parent_id);
         } catch (Exception e) {

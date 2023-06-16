@@ -10,14 +10,25 @@ function sendRequest(method, url, form, callback, reset = true) {
 	if (form == null) {
 		request.send();
 	} else {
-		request.overrideMimeType("application/x-www-form-urlencoded");
-		var send = new FormData(form);
-		request.send(send);
-
-		if (reset) {
-			form.reset();
-		}
+		//request.setRequestHeader("Content-Type", "*/*");
+		// request.overrideMimeType("application/x-www-form-urlencoded");
+		request.send(form);
 	}
+}
+
+function sendJson(method, url, data, callback) {
+	var request = new XMLHttpRequest();
+
+	request.onreadystatechange = function() {
+		callback(request);
+	};
+
+	request.open(method, url);
+
+
+	request.setRequestHeader("Content-Type", "application/json");
+	request.overrideMimeType("application/json");
+	request.send(data);
 }
 
 function validate_name(string) {
@@ -26,7 +37,7 @@ function validate_name(string) {
 }
 
 function validate_id(string) {
-	const regx = /^[0-9]*$/g;
+	const regx = /^[1-9]*$/g;
 	return regx.test(string);
 }
 

@@ -62,8 +62,9 @@ public class CopyServlet extends HttpServlet {
 
             req.setAttribute("old_id", id);
             req.setAttribute("catalog_tree", tree);
+            req.setAttribute("copy", true);
             res.setContentType("text/html;charset=UTF-8");
-            req.getRequestDispatcher("/copy.jsp").forward(req, res);
+            req.getRequestDispatcher("/home.jsp").forward(req, res);
         } catch (Exception e) {
             e.printStackTrace();
             // Error Handling
@@ -103,7 +104,6 @@ public class CopyServlet extends HttpServlet {
             // Update a db con inserimento nodi
             service.copySubTree(subTree, subTree.get(0).getId(), destCount, new_id);
 
-
         } catch (Exception e) {
             // Error Handling
             e.printStackTrace();
@@ -115,4 +115,15 @@ public class CopyServlet extends HttpServlet {
 
         res.sendRedirect("/home");
     }
+
+    @Override
+    public void destroy() {
+        if(connection == null) return;
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

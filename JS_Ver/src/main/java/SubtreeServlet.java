@@ -93,10 +93,15 @@ public class SubtreeServlet extends HttpServlet {
             noDbUpdateId(tree, old_id, new_id, num);
 
             Util.recursionOnList(root, tree.subList(1, tree.size()));
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             // Error Handling
             Util.sendError(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Error Handling
+            Util.sendError(res, HttpServletResponse.SC_BAD_REQUEST, "Questo nodo ha già 9 figli");
             return;
         }
 

@@ -17,6 +17,7 @@ public class TreeDAO {
 
 	public TreeDAO(Connection connection) {
 		this.conn = connection;
+		this.conn.setAutoCommit(false);
 	}
 
 	public List<NodeBean> getSottoAlbero(String id) throws SQLException {
@@ -80,6 +81,7 @@ public class TreeDAO {
 		pstatement.setString(1, id);
 		pstatement.setString(2, parent_id);
 		pstatement.executeUpdate();
+
 	}
 
 	public void copySubTree(List<NodeBean> sottoAlbero, String old_root, int numCount, String new_root) throws SQLException {
@@ -105,6 +107,7 @@ public class TreeDAO {
 			System.err.println("SOS " + id + " --- " + idPadre + " --- " + categoria);
 			inserisciUnFiglio(id, categoria, idPadre);
 		}
+		conn.commit();
 	}
 
 	public void cancellaRamo(NodeBean root) throws SQLException {
@@ -153,7 +156,7 @@ public class TreeDAO {
 
 		throw new SQLException("Id Not Found");
 	}
-
+	
 	public void setupCatalogTable() throws SQLException {
 		String query = "CREATE TABLE catalogo " +
 				"(id VARCHAR(255) NOT NULL, " +
@@ -163,13 +166,14 @@ public class TreeDAO {
 		stmt.executeUpdate(query);
 
 		query = "CREATE TABLE catalogo_figli " +
-				"(id INT AUTO_INCREMENT NOT NULL,"+
-				" node_id VARCHAR(255) NOT NULL, " +
+				"(node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
-				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
+				" PRIMARY KEY (node_id, parent_id), " +
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE," +
+				" FOREIGN KEY (parent_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
+		conn.commit();
 	}
 
 	// DROP and RECREATE ?
@@ -200,5 +204,6 @@ public class TreeDAO {
 		stmt.executeUpdate("INSERT INTO catalogo_figli(node_id, parent_id) VALUES(\"1121\", \"112\")");
 		stmt.executeUpdate("INSERT INTO catalogo_figli(node_id, parent_id) VALUES(\"1122\", \"112\")");
 		stmt.executeUpdate("INSERT INTO catalogo_figli(node_id, parent_id) VALUES(\"12\", \"1\")");
+		conn.commit();
 	}
 }

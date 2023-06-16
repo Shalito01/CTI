@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -34,7 +35,7 @@ public class Util {
 
     public static void sendError(HttpServletResponse res, int status, String error) throws IOException {
         res.setStatus(status);
-        res.getWriter().println("Wrong username and/or password");
+        res.getWriter().println(error);
     }
 
     public static void recursionOnList(NodeBean root, List<NodeBean> tree) throws SQLException {

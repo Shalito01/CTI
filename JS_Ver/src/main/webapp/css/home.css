@@ -8,7 +8,7 @@
   grid-template-columns: 2fr 0.5fr 0.5fr;
   align-items: center;
   grid-gap: 5px;
-  background-color: antiquewhite;
+  background-color: #282828;
   backdrop-filter: blur(10px);
   position: fixed;
   height: min-content;
@@ -22,6 +22,7 @@
 
 #title {
   font-size: 24px;
+  color: #fff;
 }
 
 #logout-btn {
@@ -40,7 +41,7 @@
 }
 
 #save-btn {
-  background-color: #4caf50;
+	background-color: #4444FF;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -51,7 +52,7 @@
 }
 
 #save-btn:hover {
-  background-color: #45a049;
+	background-color: #240090;
 }
 
 #error {
@@ -63,10 +64,6 @@
 	pointer-events: none;
 }
 
-#update-form,
-#copy-form {
-  display: none;
-}
 /* CSS for the tree wrapper */
 
 .node {
@@ -77,6 +74,7 @@
   grid-gap: 5px;
   background-color: transparent;
   transition: all linear .6s;
+  align-items: start;
 }
 
 .node-content {
@@ -121,13 +119,13 @@
   overflow-x: hidden;;
 }
 
-.footer { 
+.footer {
   position: fixed;
-  bottom:0;
+  bottom: 0;
   left: 0;
   right: 0;
   display: grid;
-  background-color: antiquewhite;
+  background-color: #282828;
   justify-content: space-around;
   height: 7vh;
 }
@@ -141,7 +139,7 @@
 }
 
 #insert-btn {
-  background-color: #4caf50;
+	background-color: #4444FF;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -152,5 +150,8 @@
 }
 
 #insert-btn:hover {
-  background-color: #45a049;
+	background-color: #240090;
+}
+a {
+  text-decoration: none;
 }

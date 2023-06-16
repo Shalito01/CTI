@@ -163,11 +163,11 @@ public class TreeDAO {
 		stmt.executeUpdate(query);
 
 		query = "CREATE TABLE catalogo_figli " +
-				"(id INT AUTO_INCREMENT NOT NULL,"+
-				" node_id VARCHAR(255) NOT NULL, " +
+				"(node_id VARCHAR(255) NOT NULL, " +
 				" parent_id VARCHAR(255) NOT NULL, " +
-				" PRIMARY KEY (id), " +
-				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
+				" PRIMARY KEY (node_id, parent_id), " +
+				" FOREIGN KEY (node_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE," +
+				" FOREIGN KEY (parent_id) REFERENCES catalogo(id) ON UPDATE NO ACTION ON DELETE CASCADE)";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 	}

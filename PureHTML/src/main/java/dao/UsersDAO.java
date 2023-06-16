@@ -16,6 +16,7 @@ public class UsersDAO {
 
 	public UsersDAO(Connection connection) {
 		this.conn = connection;
+		this.conn.setAutoCommit(false);
 	}
 
 	public void setupUsersTable() throws SQLException {
@@ -24,6 +25,7 @@ public class UsersDAO {
 			" password VARBINARY(255) NOT NULL)";
 		Statement stmt = conn.createStatement();
 		stmt.executeUpdate(query);
+		conn.commit();
 	}
 
 	public boolean checkCredentials(String username, String pass) {
@@ -64,5 +66,7 @@ public class UsersDAO {
 		stmt.setString(1, username);
 		stmt.setBytes(2, password);
 		stmt.executeUpdate();
+
+		conn.commit();
 	}
 }
